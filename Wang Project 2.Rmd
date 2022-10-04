@@ -1,0 +1,268 @@
+---
+title: "Project 2 -- Women In the Olympics"
+author: "Amy Wang"
+date: "3/20/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(gridExtra)
+olympics <- read_excel("/Users/wangxinyu/Documents/Math 250/Data Sets/olympics.xlsx")
+```
+
+## Introduction
+
+Olympic games are the leading international sporting events featuring summer and winter sports competitions in which thousands of athletes from around the world participate in a variety of competitions. ^[https://olympics.com/en/olympic-games/olympic-results]
+
+This data set contains all the winter and summer Olympic Games from Athens 1896 to Rio 2016, including 15 variables. Each row corresponds to an individual athlete competing in an individual Olympic event. The 1896 Summer Olympics, was an international multi-sport event that was celebrated in Athens, Greece, from 6 to 15 April 1896.^[https://olympics.com/en/olympic-games/athens-1896] It was the first Olympic Games held in the Modern era. On January 25, 1924, the first Winter Olympics take off in style at Chamonix in the French Alps.^[https://www.history.com/this-day-in-history/first-winter-olympics]
+
+```{r}
+glimpse(olympics)
+```
+
+
+In this data set, we can see that there is any data from 1916, 1940, 1944. Through research, I found that the 1916, 1940 & 1944 summer Olympic games and the 1940 & 1944 winter Olympic games didn't happen due to the World Wars (World War I (1916) and World War II (1940, 1944)). ^[https://www.historians.org/publications-and-directories/perspectives-on-history/summer-2021/the-phantom-olympics-why-japan-forfeited-hosting-the-1940-olympics]
+  
+The Olympic Games were founded in 1894 as a celebration of virility. Women were admitted in 1900 as participants in sports that were considered to be compatible with their femininity and fragility but were excluded from the showpiece events of track and field. Although there were an increasing amount of females who participated in the Olympics, gender imbalance was dominant throughout the twentieth century, including in the International Olympic Committee (IOC). In order to provide more gender equality in Games, the Olympic charter has made the presence of women mandatory in every sport since 2007. The IOC also added gender parity to the 2020 Olympics agenda.^[https://ehne.fr/en/encyclopedia/themes/gender-and-europe/gendered-body/women-and-olympic-games]
+
+Since March is Women's History Month, for this project, I will meanly focus on female athletes and their achievements through the 120 years of the Olympic Games' history.
+
+
+## What is the age range for female athelets?
+
+```{r}
+female <- olympics %>% 
+  filter(sex == "F") 
+
+female1 <- female %>% 
+  drop_na(age)
+
+ggplot(female1,aes(x = age))+
+  geom_histogram(aes(y=..density..),color = "#00A650", fill = "white",alpha = 0.6,binwidth = 2)+
+  geom_density(colour = "#FFD790",fill = "#FBB130", alpha = 0.40)+
+  labs(x = "Age",
+       y = "",
+       title = "The Distribution of Female Athlete's Age")+ 
+  theme_bw()+
+  theme(plot.title = element_text(face="bold", size=16),
+        axis.title.x = element_text(size=14),  
+        axis.text = element_text(color="#0085C7", size = 12))
+
+summary(female1$age)
+
+```
+
+  The results and the histogram showed that the age range of female athletes was 11-74 years old, but the median age was 23 years and the mean age was 23.73 years old, indicating that the majority of female athletes participated in the Olympic Games at a younger age. 
+  
+## What is the age range for medal-winning female athletes?
+
+```{r}
+female_medal1 <- female1 %>% 
+  drop_na(medal)
+
+ggplot(female_medal1,aes(x = age))+
+  geom_histogram(aes(y=..density..),color = "#00A650", fill = "white",alpha = 0.6,binwidth = 2)+
+  geom_density(colour = "#FFD790",fill = "#00498E", alpha = 0.40)+
+  labs(x = "Age",
+       y = "",
+       title = "The Distribution of Female Medal-winning Athlete's Age")+ 
+  theme_bw()+
+  theme(plot.title = element_text(face="bold", size=16),
+        axis.title.x = element_text(size=14),  
+        axis.text = element_text(color="#0085C7", size = 12))
+
+summary(female_medal1$age)
+
+```
+
+The results and the histogram showed that the age range of female medal-winning athletes was 11-69 years old, but the median age was 24 years and the mean age was 24.51 years old. Compared with the age range of female athletes, there are around 1 year age differences for the median and mean age, which indicated that most female athletes win their Olympic medals before 30 years old. 
+
+### The youngest female athletes and the youngest female medal-winning athlete
+
+
+```{r}
+age11 <-female1 %>% 
+  filter(age == "11")
+unique(age11$name)   # youngest female athletes
+
+filter(female_medal1, age == "11")   #youngest female medal-winning athlete
+
+```
+
+  
+And there were 9 female athletes who participated in the Olympic Games when they were 11 years old, and most of them were figure skaters who competed in the Winter Olympics: 
+
+**Magdalena Cecilia Colledge (Great Britain, Figure Skating (1932 Winter))** -- She was the 1936 Olympic silver medalist, the 1937 World Champion, the 1937–1939 European Champion, and a six-time (1935–1939, 1946) British national champion. She was also the first female skater to perform a double jump, as well as being the inventor of both the camel spin and the layback spin.^[https://en.wikipedia.org/wiki/Cecilia_Colledge]
+
+**Luigina Giavotti (Italy, Gymnastics (1928 Summer))** -- She was the youngest medalist of the Amsterdam Games and also the youngest female Olympic medalist of all time at the age of 11 years. In 1928, she won the silver medal for the Italian team. ^[https://en.wikipedia.org/wiki/Luigina_Giavotti]
+
+**Sonja Henie (Norway, Figure Skating (1924 Winter))** -- She was a three-time Olympic champion (1928, 1932, 1936) in women's singles, a ten-time World champion (1927–1936) and a six-time European champion (1931–1936). She also had the most Olympic and World titles in all ladies' figure skaters. During her acting career, Haney was one of Hollywood's highest-paid stars. ^[https://en.wikipedia.org/wiki/Sonja_Henie] ^[https://olympics.com/en/athletes/sonja-henie]
+
+**Beatrice Huștiu (Romania, Figure Skating (1968 Winter))** -- She competed at the 1968 Winter Olympics and served as her country's flag bearer at the event. 
+^[https://en.wikipedia.org/wiki/Beatrice_Hu%C8%99tiu]
+
+**Etsuko Inada (Japan, Figure Skating (1936 Winter))** -- She was a seven-time Japanese national champion. In 1952, Inada retired from competition to become a coach. She not only trained several Olympians including Miwa Fukuhara, but she also taught figure skating to the imperial family.  ^[https://en.wikipedia.org/wiki/Etsuko_Inada]
+^[https://www.olympedia.org/athletes/81362]
+
+**Liu Luyang (China, Figure Skating (1988 Winter))** -- She was the 1986 Asian Winter Games champion. ^[https://en.wikipedia.org/wiki/Liu_Luyang]
+
+**Marcelle Matthews (South Africa, Figure Skating (1960 Winter))** -- She was a South African pair skater. With partner Gwyn Jones, she represented South Africa at the 1960 Winter Olympics where she placed 13th. ^[https://en.wikipedia.org/wiki/Marcelle_Matthews]
+
+**Megan Olwen Devenish Taylor (Great Britain, Figure Skating (1932 Winter))** -- She won the World Championships in 1938 and 1939. With **Magdalena Cecilia Colledge**, they are the youngest ever female competitors in any Olympic sport and the youngest ever competitors at the Winter Olympics. At this year's winter Olympics, **Sonja Henie** won her second Olympic gold medal.
+
+**Liana Vicens (Puerto Rico, Swimming (1968 Summer))** -- At 11 years old, she remained the youngest known competitor in the history of the Olympic Games as of 2016.
+
+
+### The oldest female athletes and the oldest female medal-winning athlete
+
+```{r}
+filter(female1, age == "74")  # oldest female athletes
+
+filter(female_medal1, age == "69")   #oldest female medal-winning athlete
+
+```
+
+The oldest female athlete is **Ernestine Lonie Ernesta Robert-Mrignac (France, Art Competitions (1924))**, who participated in the Art competitions when she was 74. 
+The oldest female medal-winning athlete is **Letitia Marion Hamilton (Ireland, Art Competitions (1948))**, who participated in the Art competitions when she was 69 and won a Bronze medal for the Irish team. She was an Irish landscape artist.
+  
+Art competitions formed part of the modern Olympic Games during its early years, from 1912 to 1948. Medals were awarded for works of art inspired by sport, divided into five categories: architecture, literature, music, painting, and sculpture. ^[https://en.wikipedia.org/wiki/Art_competitions_at_the_Summer_Olympics]
+
+
+## What are the most and the least participated sports by females in Summer and Winter Olympic Games?
+
+```{r}
+female_s <- olympics %>% 
+  filter(sex == "F",
+         season == "Summer")
+
+female_w <- olympics %>% 
+  filter(sex == "F",
+         season == "Winter")
+```
+
+
+I noticed that there are many athletes who participated in multiple events for the same sports category. Therefore, I cleaned the data to only analyze how many athletes participated in each sports category.
+
+### Summer Olympic Games
+
+```{r participates per sport}
+female2<- female_s %>% 
+  select(name, sport) %>% 
+  group_by(sport) %>%
+  distinct(name,.keep_all = TRUE) %>% 
+  summarize(participant= n()) %>% 
+  arrange(desc(participant))
+
+ggplot(female2,aes(x = reorder(sport,participant),y = participant))+
+  geom_col(fill = "#F4C300")+
+  coord_flip()+
+  labs(x = "Summer Olympic Sport",
+       y = "Number of Female Athletes",
+       title = "Female Athletes by Summer Olympic Sports")+
+  theme(plot.title = element_text(face="bold", size=18),
+        axis.title = element_text(size=14),  
+        axis.text = element_text(color="#0085C7", size = 10))
+
+head(female2)
+tail(female2)
+```
+
+
+There is a total of 40 sports in the Summer Olympic Games. Athletics, Swimming, and Gymnastics are the top 3 sports with the highest participation. Motorboating, Alpinism and Croquet had less than 5 female athletes participating in the whole 120 years of the Olympic history. Motorboating was an official sport only once at the Olympic Games, in 1908.^[https://www.topendsports.com/events/discontinued/motorboating.htm#] Alpinism became an Olympic sport in 1894, was drooped from the Olympics in 1946. Instead of actual competitions, medals were awarded for the most notable alpinism feat accomplished during the previous four years. ^[https://www.topendsports.com/events/discontinued/alpinism.htm]
+Just as Motorboating, the 1900 Summer Olympic was the only year that Croquet was part of the official sport. Three women participated in two individual events. ^[https://en.wikipedia.org/wiki/Croquet_at_the_1900_Summer_Olympics]
+  
+It is surprising to see Figure skating included in summer Olympic sports from 1908 to 1920. Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. And from 1908 to 1920, figure skating was contested at Summer Olympic Games. Since 1924, the sport has been a part of the Winter Olympic Games.^[https://olympics.com/en/news/look-to-the-past-the-curious-debut-of-figure-skating-at-the-olympic-summer-games]
+
+### Winter Olympic Games
+
+```{r}
+female3<- female_w %>% 
+  select(name, sport) %>% 
+  group_by(sport) %>%
+  distinct(name,.keep_all = TRUE) %>% 
+  summarize(participant= n()) %>% 
+  arrange(desc(participant))
+
+ggplot(female3,aes(x = reorder(sport,participant),y = participant))+
+  geom_col(fill = "#F4C300")+
+  coord_flip()+
+  labs(x = "Winter Olympic Sport",
+       y = "Number of Female Athletes",
+       title = "Female Athletes by Winter Olympic Sports")+
+  theme(plot.title = element_text(face="bold", size=18),
+        axis.title = element_text(size=14),  
+        axis.text = element_text(color="#0085C7", size = 10))
+
+head(female3)
+tail(female3)
+```
+
+
+There are 14 sports in the Winter Olympic Games. Alpine Skiing, Figure Skating, and Cross Country Skiing are the top 3 sports with the highest number of female athletes. Ski Jumping and Skeleton had less than 50 female athletes participating in the whole 120 years of the Olympic history. 
+  
+Ski jumping has been a part of the Winter Olympic programme since the first Games in 1924, however, the women's competition was only added in 2014.^[https://olympics.com/en/beijing-2022/sports/ski-jumping/] Skeleton appeared in the Olympic program in 1928 and again in 1948. It was added permanently to the Olympic program for the 2002 Winter Olympics, at which stage a women's race was added.^[https://olympics.com/en/beijing-2022/sports/skeleton/] 
+  
+## Variation of Female Medal-winning Athletes over time
+
+Winning an Olympic medal is one of the greatest honors as an athlete. As more female athletes join the Olympic Games, I would like to analyze whether there are more female athletes are getting medals over time.
+
+From 1924 to 1992, the Summer and Winter Games were held in the same year. In addition, there are more sports events in the Summer Olympic Games than the Winter Olympic Games, which indicates that there will be more medals awarded in the Summer Olympic Games.  In order to have a better understanding and visualization of the data, I decided to analyze the total number of medals won by female athletes in the Summer and Winter Olympic Games separately. 
+
+```{r medal by year}
+require(gridExtra)
+
+female_medal_s <- female_s%>% 
+  select (year, medal) %>% 
+  drop_na(medal) %>% 
+  group_by(year) %>% 
+  summarize(medal= n())
+
+
+g1<- ggplot(female_medal_s,aes(x = year,y = medal),filter = "Season")+
+  geom_line(color = "#F4C300",lwd = 1.2)+
+  geom_point(shape = 11,color = "#009F3D",size =2)+
+  xlim(1900, 2020)+
+  labs(x = "Year of Olympics",
+       y = "Number of Medals",
+       title = "Medals winning by Female Athletes in Summer Olympics")+
+  theme_bw()+
+  theme(plot.title = element_text(face="bold", size=16),
+        axis.title = element_text(size=14),  
+        axis.text = element_text(size = 12, color = "#0085C7"))
+
+female_medal_w <- female_w%>% 
+  select (year, medal) %>% 
+  drop_na(medal) %>% 
+  group_by(year) %>% 
+  summarize(medal= n())
+
+
+g2 <- ggplot(female_medal_w,aes(x = year,y = medal),filter = "Season")+
+  geom_line(color = "#F4C300",lwd = 1.2)+
+  geom_point(shape = 11,color = "#009F3D",size =2)+
+  xlim(1900, 2020)+
+  labs(x = "Year of Olympics",
+       y = "Number of Medals",
+       title = "Medals winning by Female Athletes in Winter Olympics")+
+  theme_bw()+
+  theme(plot.title = element_text(face="bold", size=16),
+        axis.title = element_text(size=14),  
+        axis.text = element_text(size = 12, color = "#0085C7"))
+
+grid.arrange(g1, g2)
+
+```
+
+
+It is interesting to see that the 1900 Paris Summer Olympic Games was the first Olympic Games female athletes competed and won medals. 13 medals(4 Gold, 4 Silver, and 5 Bronze) were awarded to female athletes.
+
+From the graph, it is clear to see that for both the Summer and Winter Olympics, there is a constant increase in the number of medals won by female athletes due to the increased participation of female athletes and the rising number of medal events for female athletes. We can also see a sharper growing trend in females winning medals at the Winter Olympics than the Summer Olympics. International Olympic Committee (IOC) also tries to add more female-only events or mix events to build gender equality at the Games and to provide more opportunities for female athletes.^[https://olympics.com/ioc/news/women-at-the-olympic-winter-games-beijing-2022-all-you-need-to-know]
+
+
+## Conclusion
+
+We can conclude from the analysis that there are more and more female athletes participating and winning medals in the Olympic Games. The history of women at the Olympic Games is obviously mimicking women's struggle for equal rights for many centuries. Based on the data from the International Olympic Committee, the 2020 Tokyo Summer Olympic Games was the first gender-balanced Games, with female athletes accounting for 48 percent of the total. And Beijing 2022 was the most gender-balanced Olympic Winter Games to date, with women expected to account for 45 percent of athletes. Omitted in the first modern games in 1896, and marginalized in the early days of growing Olympics, women slowly but steadily reach for the piece of well-deserved glory.  ^[https://olympics.com/ioc/gender-equality/gender-equality-through-time/at-the-olympic-games]
+
+
